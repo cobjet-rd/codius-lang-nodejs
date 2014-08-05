@@ -27,6 +27,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifdef __native_client__
+# include "nacl_io/nacl_io.h"
+#endif
+
 static int uv__loop_init(uv_loop_t* loop, int default_loop);
 static void uv__loop_close(uv_loop_t* loop);
 
@@ -99,6 +103,10 @@ void uv_loop_delete(uv_loop_t* loop) {
 static int uv__loop_init(uv_loop_t* loop, int default_loop) {
   unsigned int i;
   int err;
+
+#ifdef __native_client__
+  nacl_io_init();
+#endif
 
   uv__signal_global_once_init();
 

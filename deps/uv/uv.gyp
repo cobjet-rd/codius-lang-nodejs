@@ -160,7 +160,11 @@
             'src/unix/udp.c',
           ],
           'link_settings': {
-            'libraries': [ '-lm' ],
+            'libraries': [
+              '-lm',
+              '-lnacl_io',
+              '-L$(NACL_SDK_ROOT)/lib/glibc_x86_32/Debug'
+            ],
             'conditions': [
               ['OS=="solaris"', {
                 'ldflags': [ '-pthreads' ],
@@ -170,6 +174,9 @@
               }],
             ],
           },
+          'include_dirs': [
+            '$(NACL_SDK_ROOT)/include'
+          ],
           'conditions': [
             ['uv_library=="shared_library"', {
               'cflags': [ '-fPIC' ],
