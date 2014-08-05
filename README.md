@@ -1,7 +1,71 @@
 Evented I/O for V8 javascript.
+(Port for Google Native Client)
 ===
 
-### To build:
+### To build for Native Client (NaCl):
+
+Prerequisites (Unix only):
+
+    * GCC 4.2 or newer
+    * G++ 4.2 or newer
+    * Python 2.6 or 2.7
+    * GNU Make 3.81 or newer
+    * libexecinfo (FreeBSD and OpenBSD only)
+    * [Native Client SDK](https://developer.chrome.com/native-client/sdk/download)
+
+Unix/Macintosh:
+
+```sh
+export NACL_SDK_ROOT=<your-path>/nacl_sdk/pepper_<version>
+source ./nacl-configure $NACL_SDK_ROOT
+make
+
+$NACL_SDK_ROOT/tools/sel_ldr_x86_32 -B $NACL_SDK_ROOT/tools/irt_core_x86_32.nexe -a \
+-- $NACL_SDK_ROOT/toolchain/linux_x86_glibc/x86_64-nacl/lib32/runnable-ld.so \
+--library-path $NACL_SDK_ROOT/toolchain/linux_x86_glibc/x86_64-nacl/lib32:\
+$NACL_SDK_ROOT/toolchain/linux_x86_glibc/i686-nacl/usr/lib:\
+$NACL_SDK_ROOT/lib/glibc_x86_32/Release ./out/Release/bin/node.nexe <your_nodejs_file>.js
+```
+
+Debug build:
+
+```sh
+make BUILDTYPE=Debug 
+
+$NACL_SDK_ROOT/tools/sel_ldr_x86_32 -h 3:3 -B $NACL_SDK_ROOT/tools/irt_core_x86_32.nexe \
+-a -- $NACL_SDK_ROOT/toolchain/linux_x86_glibc/x86_64-nacl/lib32/runnable-ld.so \
+--library-path $NACL_SDK_ROOT/toolchain/linux_x86_glibc/x86_64-nacl/lib32:\
+$NACL_SDK_ROOT/toolchain/linux_x86_glibc/i686-nacl/usr/lib:\
+$NACL_SDK_ROOT/lib/glibc_x86_32/Debug ./out/Debug/node.nexe <your_nodejs_file>.js
+```
+
+GDB Debugging:
+Change the "program" urls for runnable-ld.so based on your nacl_sdk directory 
+relative to your node root.
+```sh
+$NACL_SDK_ROOT/tools/sel_ldr_x86_32 -g -h 3:3 -B $NACL_SDK_ROOT/tools/irt_core_x86_32.nexe \
+-a -- $NACL_SDK_ROOT/toolchain/linux_x86_glibc/x86_64-nacl/lib32/runnable-ld.so \
+--library-path $NACL_SDK_ROOT/toolchain/linux_x86_glibc/x86_64-nacl/lib32:\
+$NACL_SDK_ROOT/toolchain/linux_x86_glibc/i686-nacl/usr/lib:\
+$NACL_SDK_ROOT/lib/glibc_x86_32/Debug ./out/Debug/node.nexe <your_nodejs_file>.js
+
+(new terminal)
+$NACL_SDK_ROOT/toolchain/linux_x86_glibc/bin/x86_64-nacl-gdb
+
+(gdb) nacl-manifest <your_manifest_file>.nmf
+(gdb) target remote 127.0.0.1:4014
+(gdb) remote get nexe test_node.nexe
+(gdb) file test_node.nexe
+(gdb) remote get irt test_irt.nexe 
+(gdb) nacl-irt test_irt.nexe
+```
+
+## Issues
+- libuv uses epoll which is not yet supported in nacl_io
+  - Poll or select could be used as a fallback
+  
+
+### To build for non-Native Client:
 
 Prerequisites (Unix only):
 
