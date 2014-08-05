@@ -33,9 +33,9 @@
 # define inline __inline
 #endif
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__native_client__)
 # include "linux-syscalls.h"
-#endif /* __linux__ */
+#endif /* __linux__ || __native_client__ */
 
 #if defined(__sun)
 # include <sys/port.h>
@@ -82,7 +82,7 @@
 # define UV_UNUSED(declaration)     declaration
 #endif
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__native_client__)
 # define UV__POLLIN   UV__EPOLLIN
 # define UV__POLLOUT  UV__EPOLLOUT
 # define UV__POLLERR  UV__EPOLLERR

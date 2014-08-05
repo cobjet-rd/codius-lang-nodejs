@@ -65,7 +65,7 @@
 #ifndef HEADER_BSS_FILE_C
 #define HEADER_BSS_FILE_C
 
-#if defined(__linux) || defined(__sun) || defined(__hpux)
+#if defined(__linux) || defined(__sun) || defined(__hpux) || defined(__native_client__)
 /* Following definition aliases fopen to fopen64 on above mentioned
  * platforms. This makes it possible to open and sequentially access
  * files larger than 2GB from 32-bit application. It does not allow to

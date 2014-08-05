@@ -39,7 +39,7 @@
 #include <sys/uio.h> /* writev */
 #include <sys/resource.h> /* getrusage */
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__native_client__)
 # include <sys/ioctl.h>
 #endif
 
@@ -380,7 +380,7 @@ int uv__accept(int sockfd) {
   assert(sockfd >= 0);
 
   while (1) {
-#if defined(__linux__) || __FreeBSD__ >= 10
+#if defined(__linux__) || __FreeBSD__ >= 10 || defined(__native_client__)
     static int no_accept4;
 
     if (no_accept4)
@@ -444,7 +444,7 @@ int uv__close(int fd) {
 }
 
 
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__) || defined(__native_client__)
 
 int uv__nonblock(int fd, int set) {
   int r;
@@ -473,7 +473,7 @@ int uv__cloexec(int fd, int set) {
   return 0;
 }
 
-#else /* !(defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)) */
+#else /* !(defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)) || defined(__native_client__) */
 
 int uv__nonblock(int fd, int set) {
   int flags;
@@ -536,7 +536,7 @@ int uv__cloexec(int fd, int set) {
   return 0;
 }
 
-#endif /* defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__) */
+#endif /* defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__) || defined(__native_client__) */
 
 
 /* This function is not execve-safe, there is a race window
@@ -565,7 +565,7 @@ ssize_t uv__recvmsg(int fd, struct msghdr* msg, int flags) {
   ssize_t rc;
   int* pfd;
   int* end;
-#if defined(__linux__)
+#if defined(__linux__) || defined(__native_client__)
   static int no_msg_cmsg_cloexec;
   if (no_msg_cmsg_cloexec == 0) {
     rc = recvmsg(fd, msg, flags | 0x40000000);  /* MSG_CMSG_CLOEXEC */
@@ -830,7 +830,7 @@ int uv__open_cloexec(const char* path, int flags) {
   int err;
   int fd;
 
-#if defined(__linux__) || (defined(__FreeBSD__) && __FreeBSD__ >= 9)
+#if defined(__linux__) || (defined(__FreeBSD__) && __FreeBSD__ >= 9) || defined(__native_client__)
   static int no_cloexec;
 
   if (!no_cloexec) {
@@ -878,7 +878,7 @@ int uv__dup2_cloexec(int oldfd, int newfd) {
   if (errno != EINVAL)
     return -errno;
   /* Fall through. */
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__native_client__)
   static int no_dup3;
   if (!no_dup3) {
     do
@@ -896,7 +896,7 @@ int uv__dup2_cloexec(int oldfd, int newfd) {
     int err;
     do
       r = dup2(oldfd, newfd);
-#if defined(__linux__)
+#if defined(__linux__) || defined(__native_client__)
     while (r == -1 && (errno == EINTR || errno == EBUSY));
 #else
     while (r == -1 && errno == EINTR);

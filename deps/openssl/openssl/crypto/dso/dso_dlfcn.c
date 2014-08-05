@@ -56,11 +56,24 @@
  *
  */
 
+// Workaround for error: ‘Dl_info’ undeclared (first use in this function)
+typedef struct {
+const char *dli_fname;  /* Pathname of shared object that
+                           contains address */
+void       *dli_fbase;  /* Address at which shared object
+                           is loaded */
+const char *dli_sname;  /* Name of nearest symbol with address
+                           lower than addr */
+void       *dli_saddr;  /* Exact address of symbol named
+                           in dli_sname */
+} Dl_info;
+int dladdr(const void *addr, Dl_info *info) { return 0; }
+
 /* We need to do this early, because stdio.h includes the header files
    that handle _GNU_SOURCE and other similar macros.  Defining it later
    is simply too late, because those headers are protected from re-
    inclusion.  */
-#ifdef __linux
+#ifdef __linux || defined(__native_client__)
 # ifndef _GNU_SOURCE
 #  define _GNU_SOURCE	/* make sure dladdr is declared */
 # endif

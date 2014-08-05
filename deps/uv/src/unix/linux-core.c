@@ -36,6 +36,10 @@
 #include <fcntl.h>
 #include <time.h>
 
+#ifdef __native_client__
+# include <netpacket/packet.h>
+#endif
+ 
 #define HAVE_IFADDRS_H 1
 
 #ifdef __UCLIBC__

@@ -285,7 +285,7 @@ static void uv__udp_sendmsg(uv_loop_t* loop,
 static int uv__set_reuse(int fd) {
   int yes;
 
-#if defined(SO_REUSEPORT) && !defined(__linux__)
+#if defined(SO_REUSEPORT) && !defined(__linux__) && !defined(__native_client__)
   yes = 1;
   if (setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(yes)))
     return -errno;

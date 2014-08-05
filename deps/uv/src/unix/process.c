@@ -40,7 +40,7 @@
 extern char **environ;
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__native_client__)
 # include <grp.h>
 #endif
 
@@ -120,7 +120,7 @@ static void uv__chld(uv_signal_t* handle, int signum) {
 
 
 int uv__make_socketpair(int fds[2], int flags) {
-#if defined(__linux__)
+#if defined(__linux__) || defined(__native_client__)
   static int no_cloexec;
 
   if (no_cloexec)
@@ -156,7 +156,7 @@ skip:
 
 
 int uv__make_pipe(int fds[2], int flags) {
-#if defined(__linux__)
+#if defined(__linux__) || defined(__native_client__)
   static int no_pipe2;
 
   if (no_pipe2)

@@ -5,13 +5,13 @@
     'node_use_etw%': 'false',
     'node_use_perfctr%': 'false',
     'node_has_winsdk%': 'false',
-    'node_shared_v8%': 'false',
-    'node_shared_zlib%': 'false',
-    'node_shared_http_parser%': 'false',
-    'node_shared_cares%': 'false',
-    'node_shared_libuv%': 'false',
+    'node_shared_v8%': 'true',
+    'node_shared_zlib%': 'true',
+    'node_shared_http_parser%': 'true',
+    'node_shared_cares%': 'true',
+    'node_shared_libuv%': 'true',
     'node_use_openssl%': 'true',
-    'node_shared_openssl%': 'false',
+    'node_shared_openssl%': 'true',
     'node_use_mdb%': 'false',
     'node_v8_options%': '',
     'library_files': [
@@ -72,7 +72,7 @@
 
   'targets': [
     {
-      'target_name': 'node',
+      'target_name': 'node.nexe',
       'type': 'executable',
 
       'dependencies': [

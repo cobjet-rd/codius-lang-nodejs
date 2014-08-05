@@ -42,7 +42,7 @@
 #endif
 #include <signal.h>
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__native_client__)
 # include "uv-linux.h"
 #elif defined(__sun)
 # include "uv-sunos.h"

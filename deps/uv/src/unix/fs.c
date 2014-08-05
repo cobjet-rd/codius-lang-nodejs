@@ -49,7 +49,7 @@
     defined(__OpenBSD__)    ||                                            \
     defined(__NetBSD__)
 # define HAVE_PREADV 1
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__native_client__)
 # include <linux/version.h>
 # if defined(__GLIBC_PREREQ)
 #   if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,30) &&                    \
@@ -65,7 +65,7 @@
 # define HAVE_PREADV 0
 #endif
 
-#if defined(__linux__) || defined(__sun)
+#if defined(__linux__) || defined(__sun) || defined(__native_client__)
 # include <sys/sendfile.h>
 #elif defined(__APPLE__) || defined(__FreeBSD__)
 # include <sys/socket.h>
@@ -127,7 +127,7 @@
 
 
 static ssize_t uv__fs_fdatasync(uv_fs_t* req) {
-#if defined(__linux__) || defined(__sun) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__sun) || defined(__NetBSD__) || defined(__native_client__)
   return fdatasync(req->file);
 #elif defined(__APPLE__) && defined(F_FULLFSYNC)
   return fcntl(req->file, F_FULLFSYNC);
@@ -138,7 +138,7 @@ static ssize_t uv__fs_fdatasync(uv_fs_t* req) {
 
 
 static ssize_t uv__fs_futime(uv_fs_t* req) {
-#if defined(__linux__)
+#if defined(__linux__) || defined(__native_client__)
   /* utimesat() has nanosecond resolution but we stick to microseconds
    * for the sake of consistency with other platforms.
    */
@@ -231,7 +231,7 @@ static ssize_t uv__fs_read(uv_fs_t* req) {
 #if HAVE_PREADV
     result = preadv(req->file, (struct iovec*) req->bufs, req->nbufs, req->off);
 #else
-# if defined(__linux__)
+# if defined(__linux__) || defined(__native_client__)
     static int no_preadv;
     if (no_preadv)
 # endif
@@ -239,7 +239,7 @@ static ssize_t uv__fs_read(uv_fs_t* req) {
       off_t nread;
       size_t index;
 
-# if defined(__linux__)
+# if defined(__linux__) || defined(__native_client__)
     retry:
 # endif
       nread = 0;
@@ -259,7 +259,7 @@ static ssize_t uv__fs_read(uv_fs_t* req) {
       if (nread > 0)
         result = nread;
     }
-# if defined(__linux__)
+# if defined(__linux__) || defined(__native_client__)
     else {
       result = uv__preadv(req->file,
                           (struct iovec*)req->bufs,
@@ -500,7 +500,7 @@ static ssize_t uv__fs_sendfile(uv_fs_t* req) {
   in_fd = req->flags;
   out_fd = req->file;
 
-#if defined(__linux__) || defined(__sun)
+#if defined(__linux__) || defined(__sun) || defined(__native_client__)
   {
     off_t off;
     ssize_t r;
@@ -606,7 +606,7 @@ static ssize_t uv__fs_write(uv_fs_t* req) {
 #if HAVE_PREADV
     r = pwritev(req->file, (struct iovec*) req->bufs, req->nbufs, req->off);
 #else
-# if defined(__linux__)
+# if defined(__linux__) || defined(__native_client__)
     static int no_pwritev;
     if (no_pwritev)
 # endif
@@ -614,7 +614,7 @@ static ssize_t uv__fs_write(uv_fs_t* req) {
       off_t written;
       size_t index;
 
-# if defined(__linux__)
+# if defined(__linux__) || defined(__native_client__)
     retry:
 # endif
       written = 0;
@@ -634,7 +634,7 @@ static ssize_t uv__fs_write(uv_fs_t* req) {
       if (written > 0)
         r = written;
     }
-# if defined(__linux__)
+# if defined(__linux__) || defined(__native_client__)
     else {
       r = uv__pwritev(req->file,
                       (struct iovec*) req->bufs,
