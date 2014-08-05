@@ -1,5 +1,4 @@
-Evented I/O for V8 javascript.
-(Port for Google Native Client)
+Evented I/O for V8 javascript (Port for Google Native Client).
 ===
 
 ### To build for Native Client (NaCl):
@@ -40,6 +39,7 @@ $NACL_SDK_ROOT/lib/glibc_x86_32/Debug ./out/Debug/node.nexe <your_nodejs_file>.j
 ```
 
 GDB Debugging:
+
 Change the "program" urls for runnable-ld.so based on your nacl_sdk directory 
 relative to your node root.
 ```sh
