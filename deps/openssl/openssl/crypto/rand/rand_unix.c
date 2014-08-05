@@ -133,7 +133,30 @@
 # define FD_SETSIZE (8*sizeof(fd_set))
 #endif
 
-#if defined(OPENSSL_SYS_VOS)
+#if defined(__native_client__)
+#include <stdlib.h>
+#include <irt.h>
+/* TODO(sehr): remove this patch when nacl_io can handle /dev/urandom. */
+int RAND_poll(void)
+{
+  unsigned char buf[ENTROPY_NEEDED];
+  size_t n = 0;
+  struct nacl_irt_random rand_intf;
+  if (nacl_interface_query(NACL_IRT_RANDOM_v0_1, &rand_intf, sizeof(rand_intf))
+      != sizeof(rand_intf))
+    abort();
+  while (n < sizeof(buf)) {
+    size_t nread;
+    if (rand_intf.get_random_bytes((unsigned char *)buf+n,
+                                   ENTROPY_NEEDED-n, &nread) != 0)
+      abort();
+    n += nread;
+  }
+  RAND_add(buf, sizeof(buf), ENTROPY_NEEDED);
+  memset(buf, 0, sizeof(buf));
+  return 1;
+}
+#elif defined(OPENSSL_SYS_VOS)
 
 /* The following algorithm repeatedly samples the real-time clock
    (RTC) to generate a sequence of unpredictable data.  The algorithm
